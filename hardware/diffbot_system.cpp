@@ -183,7 +183,7 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_activate(
   }
   if (cfg_.pid_p > 0)
   {
-    comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
+    // comms_.set_pid_values(cfg_.pid_p,cfg_.pid_d,cfg_.pid_i,cfg_.pid_o);
   }
   RCLCPP_INFO(rclcpp::get_logger("DiffBotSystemHardware"), "Successfully activated!");
 
@@ -207,7 +207,7 @@ hardware_interface::return_type DiffBotSystemHardware::read(
     return hardware_interface::return_type::ERROR;
   }
 
-  comms_.read_encoder_values(wheels_[0].enc, wheels_[1].enc, wheels_[2].enc, wheels_[3].enc);
+  // comms_.read_encoder_values(wheels_[0].enc, wheels_[1].enc, wheels_[2].enc, wheels_[3].enc);
 
   double delta_seconds = period.seconds();
 
@@ -234,11 +234,14 @@ hardware_interface::return_type ros2_control_demo_example_2 ::DiffBotSystemHardw
   {
     motor_counts_per_loop.push_back(wheels_[i].cmd / wheels_[i].rads_per_count / cfg_.loop_rate);
   }
-  comms_.set_motor_values(motor_counts_per_loop[0], 
-                          motor_counts_per_loop[1],
-                          motor_counts_per_loop[2],
-                          motor_counts_per_loop[3]
-  );
+  std::stringstream ss;
+  ss << wheels_[0].cmd << "\r";
+  comms_.send_msg(ss.str());
+  // comms_.set_motor_values(motor_counts_per_loop[0], 
+  //                        motor_counts_per_loop[1],
+  //                        motor_counts_per_loop[2],
+  //                        motor_counts_per_loop[3]
+  // );
 
   return hardware_interface::return_type::OK;
 }
