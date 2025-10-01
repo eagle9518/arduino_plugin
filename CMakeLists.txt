@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ros2_control_demo_example_2 LANGUAGES CXX)
+project(arduino_plugin LANGUAGES CXX)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
   add_compile_options(-Wall -Wextra)
@@ -22,36 +22,36 @@ endforeach()
 
 ## COMPILE
 add_library(
-  ros2_control_demo_example_2
+  arduino_plugin
   SHARED
   hardware/diffbot_system.cpp
 )
-target_compile_features(ros2_control_demo_example_2 PUBLIC cxx_std_17)
-target_include_directories(ros2_control_demo_example_2 PUBLIC
+target_compile_features(arduino_plugin PUBLIC cxx_std_17)
+target_include_directories(arduino_plugin PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
-$<INSTALL_INTERFACE:include/ros2_control_demo_example_2>
+$<INSTALL_INTERFACE:include/arduino_plugin>
 )
 ament_target_dependencies(
-  ros2_control_demo_example_2 PUBLIC
+  arduino_plugin PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
-target_link_libraries(ros2_control_demo_example_2 PUBLIC serial)
+target_link_libraries(arduino_plugin PUBLIC serial)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(${PROJECT_NAME} PRIVATE "DIFFDRIVE_ARDUINO_BUILDING_DLL")
 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface ros2_control_demo_example_2.xml)
+pluginlib_export_plugin_description_file(hardware_interface arduino_plugin.xml)
 
 # INSTALL
 install(
   DIRECTORY hardware/include/
-  DESTINATION include/ros2_control_demo_example_2
+  DESTINATION include/arduino_plugin
 )
-install(TARGETS ros2_control_demo_example_2
-  EXPORT export_ros2_control_demo_example_2
+install(TARGETS arduino_plugin
+  EXPORT export_arduino_plugin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -62,6 +62,6 @@ if(BUILD_TESTING)
 endif()
 
 ## EXPORTS
-ament_export_targets(export_ros2_control_demo_example_2 HAS_LIBRARY_TARGET)
+ament_export_targets(export_arduino_plugin HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

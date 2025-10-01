@@ -1,5 +1,5 @@
-#ifndef DIFFDRIVE_ARDUINO_WHEEL_HPP
-#define DIFFDRIVE_ARDUINO_WHEEL_HPP
+#ifndef ARDUINO_PLUGIN_WHEEL_HPP_
+#define ARDUINO_PLUGIN_WHEEL_HPP_
 
 #include <string>
 #include <cmath>
@@ -36,4 +36,4 @@ class Wheel
 };
 
 
-#endif // DIFFDRIVE_ARDUINO_WHEEL_HPP
+#endif // ARDUINO_PLUGIN_WHEEL_HPP_

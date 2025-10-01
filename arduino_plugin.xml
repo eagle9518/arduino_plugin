@@ -1,0 +1,9 @@
+<library path="arduino_plugin">
+  <class name="arduino_plugin/DiffBotSystemHardware"
+         type="arduino_plugin::DiffBotSystemHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Hardware Interface for Differential Drive Arduino controller.
+    </description>
+  </class>
+</library>

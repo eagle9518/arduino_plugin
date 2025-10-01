@@ -1,5 +1,5 @@
-#ifndef DIFFDRIVE_ARDUINO_ARDUINO_COMMS_HPP
-#define DIFFDRIVE_ARDUINO_ARDUINO_COMMS_HPP
+#ifndef ARDUINO_PLUGIN_ARDUINO_COMMS_HPP_
+#define ARDUINO_PLUGIN_ARDUINO_COMMS_HPP_
 
 #include <sstream>
 #include <libserial/SerialPort.h>
@@ -120,4 +120,4 @@ private:
     int timeout_ms_;
 };
 
-#endif // DIFFDRIVE_ARDUINO_ARDUINO_COMMS_HPP
+#endif // ARDUINO_PLUGIN_ARDUINO_COMMS_HPP_

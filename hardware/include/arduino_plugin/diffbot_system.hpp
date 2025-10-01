@@ -14,8 +14,8 @@
 // 
 // This code was modified by Logan Wong
 
-#ifndef ROS2_CONTROL_DEMO_EXAMPLE_2__DIFFBOT_SYSTEM_HPP_
-#define ROS2_CONTROL_DEMO_EXAMPLE_2__DIFFBOT_SYSTEM_HPP_
+#ifndef ARDUINO_PLUGIN_DIFFBOT_SYSTEM_HPP_
+#define ARDUINO_PLUGIN_DIFFBOT_SYSTEM_HPP_
 
 #include <memory>
 #include <string>
@@ -32,11 +32,11 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "ros2_control_demo_example_2/arduino_comms.hpp"
-#include "ros2_control_demo_example_2/wheel.hpp"
+#include "arduino_plugin/arduino_comms.hpp"
+#include "arduino_plugin/wheel.hpp"
 
 
-namespace ros2_control_demo_example_2
+namespace arduino_plugin
 {
 // Actuator, Sensor, or System
 class DiffBotSystemHardware : public hardware_interface::SystemInterface
@@ -91,6 +91,6 @@ private:
   std::vector<Wheel> wheels_{4};
 };
 
-}  // namespace ros2_control_demo_example_2
+}  // namespace arduino_plugin
 
-#endif  // ROS2_CONTROL_DEMO_EXAMPLE_2__DIFFBOT_SYSTEM_HPP_
+#endif  // ARDUINO_PLUGIN_DIFFBOT_SYSTEM_HPP_

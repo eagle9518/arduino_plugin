@@ -14,7 +14,7 @@
 //
 // This code was modified by Logan Wong
 
-#include "ros2_control_demo_example_2/diffbot_system.hpp"
+#include "arduino_plugin/diffbot_system.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -29,7 +29,8 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-namespace ros2_control_demo_example_2
+
+namespace arduino_plugin
 {
 hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
   const hardware_interface::HardwareInfo & info)
@@ -221,7 +222,7 @@ hardware_interface::return_type DiffBotSystemHardware::read(
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type ros2_control_demo_example_2 ::DiffBotSystemHardware::write(
+hardware_interface::return_type arduino_plugin ::DiffBotSystemHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   if (!comms_.connected())
@@ -246,8 +247,8 @@ hardware_interface::return_type ros2_control_demo_example_2 ::DiffBotSystemHardw
   return hardware_interface::return_type::OK;
 }
 
-}  // namespace ros2_control_demo_example_2
+}  // namespace arduino_plugin
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(
-  ros2_control_demo_example_2::DiffBotSystemHardware, hardware_interface::SystemInterface)
+  arduino_plugin::DiffBotSystemHardware, hardware_interface::SystemInterface)
