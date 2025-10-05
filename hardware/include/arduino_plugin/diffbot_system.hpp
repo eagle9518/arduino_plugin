@@ -34,6 +34,7 @@
 
 #include "arduino_plugin/arduino_comms.hpp"
 #include "arduino_plugin/wheel.hpp"
+#include "arduino_plugin/servo.hpp"
 
 
 namespace arduino_plugin
@@ -44,17 +45,15 @@ class DiffBotSystemHardware : public hardware_interface::SystemInterface
 
 struct Config
 {
-  // I'll define it as FL, BL, BR, FR (ccw around robot)
-  std::vector<std::string> wheel_names;
+  // CCW around robot starting from FL wheel
+  std::vector<std::string> drive_wheel_names;
+  std::vector<std::string> shooter_wheel_names;
+  std::vector<std::string> shooter_servo_names;
   float loop_rate = 0.0;
-  std::string device = "";
   int baud_rate = 0;
   int timeout_ms = 0;
   int enc_counts_per_rev = 0;
-  int pid_p = 0;
-  int pid_d = 0;
-  int pid_i = 0;
-  int pid_o = 0;
+  std::string device = "";
 };
 
 public:
@@ -88,7 +87,9 @@ public:
 private:
   ArduinoComms comms_;
   Config cfg_;
-  std::vector<Wheel> wheels_{4};
+  std::vector<Wheel> drive_wheels_{4};
+  std::vector<Wheel> shooter_wheels_{2};
+  std::vector<Servo> shooter_servos_{2};
 };
 
 }  // namespace arduino_plugin

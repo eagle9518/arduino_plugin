@@ -22,8 +22,9 @@ class Wheel
         setup(wheel_name, counts_per_rev);
       }
 
-      
-      void setup(const std::string &wheel_name, int counts_per_rev)
+      // Here -1 indicates this is an open-loop control and we are to
+      // provide "dummy" encoder values in the form of the sent command
+      void setup(const std::string &wheel_name, int counts_per_rev=-1)
       {
         name = wheel_name;
         rads_per_count = (2*M_PI)/counts_per_rev;

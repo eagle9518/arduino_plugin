@@ -48,72 +48,37 @@ public:
     return serial_conn_.IsOpen();
   }
 
-
-  std::string send_msg(const std::string &msg_to_send, bool print_output = false)
+  void send_command(const float *commands, size_t length)
   {
     serial_conn_.FlushIOBuffers(); // Just in case
-    serial_conn_.Write(msg_to_send + "\n");
-
-//    std::string response = "";
-//    try
-//    {
-//      // Responses end with \r\n so we will read up to (and including) the \n.
-//      serial_conn_.ReadLine(response, '\n', timeout_ms_);
-//    }
-//    catch (const LibSerial::ReadTimeout&)
-//    {
-//        std::cerr << "The ReadByte() call has timed out." << std::endl ;
-//    }
-
-//    if (print_output)
-//    {
-//      std::cout << "Sent: " << msg_to_send << " Recv: " << response << std::endl;
-//    }
-    std::cout << "Sent!" << msg_to_send << std::endl;
-    return "Good";
+    const uint8_t* p = (uint8_t*)commands;
+    // DataBuffer is just an alias for a vector
+    LibSerial::DataBuffer buffer(p, p+length*sizeof(float));
+    serial_conn_.Write(buffer);
   }
 
-
-  void send_empty_msg()
-  {
-    std::string response = send_msg("\r");
-  }
-
-  void read_encoder_values(int &val_1, int &val_2, int &val_3, int &val_4)
-  {
-    std::string response = send_msg("e\r");
-
-    std::string delimiter = " ";
-    size_t start = 0;
-    size_t end = 0;
-    std::vector<std::string> tokens;
-
-    // split by spaces
-    while ((end = response.find(delimiter, start)) != std::string::npos) {
-      tokens.push_back(response.substr(start, end - start));
-      start = end + delimiter.length();
-    }
-    tokens.push_back(response.substr(start));
-
-    val_1 = std::atoi(tokens[0].c_str());
-    val_2 = std::atoi(tokens[1].c_str());
-    val_3 = std::atoi(tokens[2].c_str());
-    val_4 = std::atoi(tokens[3].c_str());
-  }
-
-  void set_motor_values(int val_1, int val_2, int val_3, int val_4)
-  {
-    std::stringstream ss;
-    ss << "m " << val_1 << " " << val_2 << " " << val_3 << " " << val_4 << "\r";
-    send_msg(ss.str());
-  }
-
-  void set_pid_values(int k_p, int k_d, int k_i, int k_o)
-  {
-    std::stringstream ss;
-    ss << "u " << k_p << ":" << k_d << ":" << k_i << ":" << k_o << "\r";
-    send_msg(ss.str());
-  }
+  // TODO Expect array to be static float array and parse accordingly
+  // void read_encoder_values(int &val_1, int &val_2)
+  // {
+  //   std::string response = send_msg("e\r");
+  //
+  //   std::string delimiter = " ";
+  //   size_t start = 0;
+  //   size_t end = 0;
+  //   std::vector<std::string> tokens;
+  //
+  //   // split by spaces
+  //   while ((end = response.find(delimiter, start)) != std::string::npos) {
+  //     tokens.push_back(response.substr(start, end - start));
+  //     start = end + delimiter.length();
+  //   }
+  //   tokens.push_back(response.substr(start));
+  //
+  //   val_1 = std::atoi(tokens[0].c_str());
+  //   val_2 = std::atoi(tokens[1].c_str());
+  //   val_3 = std::atoi(tokens[2].c_str());
+  //   val_4 = std::atoi(tokens[3].c_str());
+  // }
 
 private:
     LibSerial::SerialPort serial_conn_;
