@@ -49,6 +49,9 @@ struct Config
   std::vector<std::string> drive_wheel_names;
   std::vector<std::string> shooter_wheel_names;
   std::vector<std::string> shooter_servo_names;
+  std::string intake_servo_name;
+  std::string intake_wheel_name;
+  std::string stick_servo_name;
   float loop_rate = 0.0;
   int baud_rate = 0;
   int timeout_ms = 0;
@@ -90,6 +93,10 @@ private:
   std::vector<Wheel> drive_wheels_{4};
   std::vector<Wheel> shooter_wheels_{2};
   std::vector<Servo> shooter_servos_{2};
+  
+  Servo intake_servo_;
+  Wheel intake_wheel_;
+  Servo stick_servo_;
 };
 
 }  // namespace arduino_plugin

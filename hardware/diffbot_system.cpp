@@ -57,6 +57,15 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
   cfg_.shooter_servo_names.push_back(info_.hardware_parameters["yaw_shooter_servo_name"]);
   cfg_.shooter_servo_names.push_back(info_.hardware_parameters["pitch_shooter_servo_name"]);
 
+  // Stick Servo
+  cfg_.stick_servo_name = info_.hardware_parameters["stick_servo_name"];
+
+  // Intake Servo
+  cfg_.intake_servo_name = info_.hardware_parameters["intake_servo_name"];
+
+  // Intake Wheel
+  cfg_.intake_wheel_name = info_.hardware_parameters["intake_wheel_name"];
+
   // General
   cfg_.device = info_.hardware_parameters["device"]; // usually ttyACM0
   cfg_.baud_rate = std::stoi(info_.hardware_parameters["baud_rate"]);
@@ -75,6 +84,10 @@ hardware_interface::CallbackReturn DiffBotSystemHardware::on_init(
   {
     shooter_servos_[i].setup(cfg_.shooter_servo_names[i]);
   }
+
+  intake_servo_.setup(cfg_.intake_servo_name);
+  intake_wheel_.setup(cfg_.intake_wheel_name);
+  stick_servo_.setup(cfg_.stick_servo_name);
 
   // You can add a validation for-loop here if needed. Since we're using
   // motors + servos it's easier for now to just skip that part
@@ -104,6 +117,13 @@ std::vector<hardware_interface::StateInterface> DiffBotSystemHardware::export_st
       cfg_.shooter_servo_names[i], hardware_interface::HW_IF_POSITION, &(shooter_servos_[i]).pos));
   }
 
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+      cfg_.intake_servo_name, hardware_interface::HW_IF_POSITION, &(intake_servo_.pos)));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+      cfg_.intake_wheel_name, hardware_interface::HW_IF_VELOCITY, &(intake_wheel_.vel)));
+  state_interfaces.emplace_back(hardware_interface::StateInterface(
+      cfg_.stick_servo_name, hardware_interface::HW_IF_POSITION, &(stick_servo_.pos)));
+
   return state_interfaces;
 }
 
@@ -126,6 +146,13 @@ std::vector<hardware_interface::CommandInterface> DiffBotSystemHardware::export_
     command_interfaces.emplace_back(hardware_interface::CommandInterface(
       cfg_.shooter_servo_names[i], hardware_interface::HW_IF_POSITION, &(shooter_servos_[i]).cmd));
   }
+
+  command_interfaces.emplace_back(hardware_interface::CommandInterface(
+    cfg_.intake_servo_name, hardware_interface::HW_IF_POSITION, &(intake_servo_.cmd)));
+  command_interfaces.emplace_back(hardware_interface::CommandInterface(
+    cfg_.intake_wheel_name, hardware_interface::HW_IF_VELOCITY, &(intake_wheel_.cmd)));
+  command_interfaces.emplace_back(hardware_interface::CommandInterface(
+    cfg_.stick_servo_name, hardware_interface::HW_IF_POSITION, &(stick_servo_.cmd)));
 
   return command_interfaces;
 }
@@ -201,28 +228,49 @@ hardware_interface::return_type DiffBotSystemHardware::read(
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type arduino_plugin ::DiffBotSystemHardware::write(
+hardware_interface::return_type arduino_plugin::DiffBotSystemHardware::write(
   const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/)
 {
   if (!comms_.connected())
   {
     return hardware_interface::return_type::ERROR;
   }
-  
-  // commands = {FL_drive_wheel_vel, BL_drive_wheel_vel, BR_wheel_vel, 
-  //             FR_wheel_vel, left_shooter_wheel_vel, right_shooter_wheel_vel,
-  //             yaw_servo_pos, pitch_servo_pos}
-  float commands[8];
-  for (size_t i = 0; i < sizeof(commands) / sizeof(float); ++i)
+
+  // commands = {FL_drive, BL_drive, BR_drive, FR_drive,
+  //             left_shooter, right_shooter,
+  //             intake_motor,
+  //             yaw_servo, pitch_servo, stick_servo, intake_servo}
+  float commands[11];
+
+  size_t idx = 0;
+
+  // Drive wheel commands
+  for (size_t i = 0; i < drive_wheels_.size(); ++i)
   {
-    if (i < cfg_.drive_wheel_names.size()) {
-      commands[i] = drive_wheels_[i].cmd;
-    } else if (i < cfg_.drive_wheel_names.size() + cfg_.shooter_wheel_names.size()) {
-      commands[i] = shooter_wheels_[i].cmd;
-    } else {
-      commands[i] = shooter_servos_[i].cmd;
-    }
+    commands[idx++] = drive_wheels_[i].cmd;
   }
+
+  // Shooter wheel commands
+  for (size_t i = 0; i < shooter_wheels_.size(); ++i)
+  {
+    commands[idx++] = shooter_wheels_[i].cmd;
+  }
+
+  // Intake wheel
+  commands[idx++] = intake_wheel_.cmd;
+
+  // Shooter servos (yaw, pitch)
+  for (size_t i = 0; i < shooter_servos_.size(); ++i)
+  {
+    commands[idx++] = shooter_servos_[i].cmd;
+  }
+
+  // Stick servo
+  commands[idx++] = stick_servo_.cmd;
+
+  // Intake servo
+  commands[idx++] = intake_servo_.cmd;
+
   comms_.send_command(commands, sizeof(commands) / sizeof(float));
 
   return hardware_interface::return_type::OK;
